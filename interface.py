@@ -38,6 +38,8 @@ class QRGenerator:
 
     def views(self):
         self.window.geometry("720x400")
+        self.window.title("QRCode")
+        self.window.iconbitmap("./img/icon.ico")
 
         self.linkLabel : CTkLabel = CTkLabel(
             master=self.window, 
