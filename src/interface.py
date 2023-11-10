@@ -1,7 +1,11 @@
+import os
 from customtkinter import CTk, CTkLabel, CTkTextbox, CTkButton, CTkImage, CENTER
-from PIL import Image
+from tkinter import Label, filedialog
+from PIL import Image, ImageTk
 import qrcode
 from qrcode.constants import ERROR_CORRECT_L
+
+APP_PATH = os.path.dirname(os.path.realpath(__file__))
 
 class QRGenerator:
 
@@ -12,7 +16,7 @@ class QRGenerator:
         self.views()
         self.window.mainloop()
 
-    def create_QR(self, link : str, size : int = 3, box_size : int = 3, border : int = 5, color : str = "black"):
+    def create_QR(self, link : str, size : int = 10, box_size : int = 3, border : int = 5, color : str = "black"):
         self.qr : qrcode.QRCode = qrcode.QRCode(
             version=size,
             error_correction= ERROR_CORRECT_L,
@@ -25,21 +29,40 @@ class QRGenerator:
 
         self.img = self.qr.make_image(fill_color=color, back_color="white")
         return self.img
+    
+    def getText(self):
+        return self.linkTextbox.get("1.0",'end')
+    
+    def saveAs(self, img):
+        img.save("zdazd.png")
+
 
     def showQR(self):
-        try:
-            self.QRlabel.destroy()
-        except:
-            pass
-        self.qr = self.create_QR("http://youtube.com")
-        self.imgQR : CTkImage = CTkImage(Image.open("qrcode.png"), size=(150, 150))
-        self.QRlabel : CTkLabel = CTkLabel(master=self.window, text="", image=self.imgQR)
-        self.QRlabel.place(relx=0.5, rely=0.7, anchor= CENTER)
+        if self.getText() != "\n":
+            try:
+                self.QRlabel.destroy()
+            except:
+                pass
+            self.qr = self.create_QR(self.getText())
+            self.imgQR : ImageTk.PhotoImage = ImageTk.PhotoImage(self.qr)
+            self.QRlabel : Label = Label(master=self.window, 
+                                         text="", 
+                                         image=self.imgQR
+            )
+            self.saveButton : CTkButton = CTkButton(
+                master=self.window,
+                text="Enregistrer sous",
+                command=self.saveAs(self.qr)
+            )
+            self.QRlabel.place(relx=0.5, rely=0.7, anchor= CENTER)
+            self.saveButton.place(relx=0.9, rely=0.35, anchor= CENTER)
+
 
     def views(self):
         self.window.geometry("720x400")
+        self.window.resizable(width=False, height=False)
         self.window.title("QRCode")
-        self.window.iconbitmap("./img/icon.ico")
+        self.window.iconbitmap(APP_PATH + r'\..\img\icon.ico')
 
         self.linkLabel : CTkLabel = CTkLabel(
             master=self.window, 
@@ -54,7 +77,7 @@ class QRGenerator:
             font=("Arial", 25)
         )
 
-        self.generateButton : CTkButton = CTkButton (
+        self.generateButton : CTkButton = CTkButton(
             master=self.window,
             text="Générer",
             command=self.showQR
