@@ -34,7 +34,7 @@ class QRGenerator:
         return self.linkTextbox.get("1.0",'end')
     
     def saveAs(self, img):
-        img.save("zdazd.png")
+        img.save("./save/qrcode.png")
 
 
     def showQR(self):
@@ -49,14 +49,16 @@ class QRGenerator:
                                          text="", 
                                          image=self.imgQR
             )
-            self.saveButton : CTkButton = CTkButton(
-                master=self.window,
-                text="Enregistrer sous",
-                command=self.saveAs(self.qr)
-            )
+
             self.QRlabel.place(relx=0.5, rely=0.7, anchor= CENTER)
             self.saveButton.place(relx=0.9, rely=0.35, anchor= CENTER)
 
+    def saveButton(self, qr):
+        self.saveButton : CTkButton = CTkButton(
+        master=self.window,
+        text="Enregistrer",
+        command=self.saveAs(self.qr)
+        )
 
     def views(self):
         self.window.geometry("720x400")
