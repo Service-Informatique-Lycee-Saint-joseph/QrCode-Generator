@@ -30,35 +30,75 @@ class QRGenerator:
         self.img = self.qr.make_image(fill_color=color, back_color="white")
         return self.img
     
-    def getText(self):
+    def getTextLink(self):
         return self.linkTextbox.get("1.0",'end')
     
+    def getTextSave(self):
+        return self.saveTextbox.get("1.0",'end')[:-1]
+    
     def saveAs(self, img):
-        img.save("./save/qrcode.png")
+        if not os.path.exists("C:\Qrcode"):
+            os.mkdir("C:\Qrcode")
+        print(self.getTextSave())
+        img.save("C:/Qrcode/" + str(self.getTextSave()) + ".png")
 
 
     def showQR(self):
-        if self.getText() != "\n":
+        if self.getTextLink() != "\n":
             try:
                 self.QRlabel.destroy()
             except:
                 pass
-            self.qr = self.create_QR(self.getText())
+            self.qr = self.create_QR(self.getTextLink())
             self.imgQR : ImageTk.PhotoImage = ImageTk.PhotoImage(self.qr)
             self.QRlabel : Label = Label(master=self.window, 
                                          text="", 
                                          image=self.imgQR
             )
+            self.QRlabel.place(relx=0.3, rely=0.7, anchor= CENTER)
+            self.saveWidgets()
+            self.window.geometry("720x700")
 
-            self.QRlabel.place(relx=0.5, rely=0.7, anchor= CENTER)
-            self.saveButton.place(relx=0.9, rely=0.35, anchor= CENTER)
-
-    def saveButton(self, qr):
-        self.saveButton : CTkButton = CTkButton(
-        master=self.window,
-        text="Enregistrer",
-        command=self.saveAs(self.qr)
+    def saveWidgets(self):
+        self.saveLabel : CTkLabel = CTkLabel(
+            master=self.window, 
+            text='Nom du fichier',
+            font=("Courier", 16)
         )
+        self.saveButton : CTkButton = CTkButton(
+            master=self.window,
+            text="Enregistrer",
+            command = lambda : self.saveAs(self.qr)
+        )
+        self.saveTextbox : CTkTextbox = CTkTextbox(
+            master=self.window,
+            height=10,
+            width= 200,
+            font=("Arial", 14)
+        )
+        self.saveLabel.place(relx=0.70, rely=0.5, anchor= CENTER)
+        self.saveTextbox.place(relx=0.70, rely=0.6, anchor= CENTER)
+        self.saveButton.place(relx=0.70, rely=0.72, anchor= CENTER)
+
+    def colorWidgets(self):
+        self.saveLabel : CTkLabel = CTkLabel(
+            master=self.window, 
+            text='Nom du fichier',
+            font=("Courier", 16)
+        )
+        self.saveButton : CTkButton = CTkButton(
+            master=self.window,
+            text="Enregistrer",
+            command = lambda : self.saveAs(self.qr)
+        )
+        self.saveTextbox : CTkTextbox = CTkTextbox(
+            master=self.window,
+            height=10,
+            width= 200,
+            font=("Arial", 14)
+        )
+
+
 
     def views(self):
         self.window.geometry("720x400")
@@ -82,7 +122,7 @@ class QRGenerator:
         self.generateButton : CTkButton = CTkButton(
             master=self.window,
             text="Générer",
-            command=self.showQR
+            command= lambda : self.showQR()
         )
 
         self.linkLabel.place(relx=0.5, rely=0.1, anchor= CENTER)
