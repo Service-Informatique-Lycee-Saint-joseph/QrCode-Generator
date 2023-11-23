@@ -1,9 +1,9 @@
 import os
-from customtkinter import CTk, CTkLabel, CTkTextbox, CTkButton, CTkImage, CTkOptionMenu, StringVar, CENTER
-from tkinter import Label, filedialog
+from customtkinter import CTk, CTkLabel, CTkTextbox, CTkButton, CTkOptionMenu, CTkSlider ,CENTER
+from tkinter import Label
 from PIL import Image, ImageTk
 import qrcode
-from qrcode.constants import ERROR_CORRECT_L
+from qrcode.constants import ERROR_CORRECT_L, ERROR_CORRECT_H
 
 APP_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -16,7 +16,7 @@ class QRGenerator:
         self.views()
         self.window.mainloop()
 
-    def create_QR(self, link : str, size : int = 10, box_size : int = 3, border : int = 5, color : str = "black"):
+    def createQR(self, link : str, size : int = 10, box_size : int = 3, border : int = 5, color : str | tuple = "black"):
         self.qr : qrcode.QRCode = qrcode.QRCode(
             version=size,
             error_correction= ERROR_CORRECT_L,
@@ -42,21 +42,45 @@ class QRGenerator:
         print(self.getTextSave())
         img.save("C:/Qrcode/" + str(self.getTextSave()) + ".png")
 
-    def viewQR(self, color : str = "black"):
+    def viewQR(self, img : str = "", color : str | tuple = "black"):
         try:
             self.QRlabel.destroy()
         except:
             pass
-        self.qr = self.create_QR(self.getTextLink(), color=color)
+        if img != "":
+            self.qr = self.createQRwithimage(self.getTextLink(), color=color, img=img)
+        else:
+            self.qr = self.createQR(self.getTextLink(), color=color)
         self.imgQR : ImageTk.PhotoImage = ImageTk.PhotoImage(self.qr)
         self.QRlabel : Label = Label(master=self.window, 
                                         text="", 
                                         image=self.imgQR
         )
+    
+    def createQRwithimage(self, link : str, img: str = "",  size : int = 10, box_size : int = 3, border : int = 5, color : str | tuple = "black"):
+        self.logo = Image.open(img)
+        basewidth = 75
+        self.wpercent = (basewidth/float(self.logo.size[0]))
+        self.hsize = int((float(self.logo.size[1])*float(self.wpercent)))
+        self.logo = self.logo.resize((basewidth, self.hsize), Image.Resampling.LANCZOS)
+        self.qr : qrcode.QRCode = qrcode.QRCode(
+            version=size,
+            error_correction= ERROR_CORRECT_H,
+            box_size=box_size,
+            border=border
+        )
+        self.qr.add_data(link)
+        self.qr.make()
+        self.qr = self.qr.make_image(fill_color=color, back_color="White").convert('RGB')
+        self.pos = ((self.qr.size[0] - self.logo.size[0]) // 2,
+        (self.qr.size[1] - self.logo.size[1]) // 2)
+        self.qr.paste(self.logo, self.pos)
+        return self.qr
 
-    def showQRFirsttime(self, color : str = "black"):
+
+    def showQRFirsttime(self, color : str | tuple = "black"):
         if self.getTextLink() != "\n":
-            self.viewQR(color)
+            self.viewQR(color=color)
             self.window.geometry("720x550")
             self.linkLabel.place(relx=0.5, rely=0.07, anchor= CENTER)
             self.linkTextbox.place(relx=0.5, rely=0.15, anchor= CENTER)
@@ -64,31 +88,56 @@ class QRGenerator:
             self.QRlabel.place(relx=0.2, rely=0.55, anchor= CENTER)
             self.saveWidget()
             self.colorWidget()
+            self.imgWidget()
 
-    def showQR(self, color : str = "black"):
+    def showQR(self, img : str = "", color : str | tuple = "black"):
         if self.getTextLink() != "\n":
-            self.viewQR(color)
+            self.viewQR(img, color)
             self.QRlabel.place(relx=0.2, rely=0.55, anchor= CENTER)
             
-    def colorCallback(self):
+    def optionCallback(self):
+        self.selectImg = self.imgOptionmenu.get()
+        match self.selectImg:
+            case "Sans":
+                try:
+                    self.progressbarImg.destroy()
+                except:
+                    pass
+                self.img = ""
+            case "STJO":
+                try:
+                    self.progressbarImg.destroy()
+                except:
+                    pass
+                self.progressbarImgWidget()
+                self.img = "./img/logo.png"
         self.selectColor = self.colorOptionmenu.get()
         self.colorOptionmenu.set(self.selectColor)
         match self.selectColor:
             case "Noir":
-                self.showQR()
+                self.showQR(self.img)
                 self.colorOptionmenu.configure(button_color="black")
             case "Vert":
-                self.showQR("green")
+                self.showQR(self.img, "green")
                 self.colorOptionmenu.configure(button_color="green")
             case "Jaune":
-                self.showQR("yellow")
+                self.showQR(self.img, "yellow")
                 self.colorOptionmenu.configure(button_color="yellow")
             case "Bleu":
-                self.showQR("blue")
+                self.showQR(self.img, "blue")
                 self.colorOptionmenu.configure(button_color="blue")
             case "Rouge":
-                self.showQR("red")
+                self.showQR(self.img, "red")
                 self.colorOptionmenu.configure(button_color="red")
+            case "Orange":
+                self.showQR(self.img, "orange")
+                self.colorOptionmenu.configure(button_color="orange")
+            case "STJO":
+                self.showQR(self.img, (0, 91, 155))
+                self.colorOptionmenu.configure(button_color='#005b9b')
+
+    def progressBarCallback(self):
+        self.progressbarImg.get()
 
     def linkWidget(self):
         self.linkLabel : CTkLabel = CTkLabel(
@@ -135,7 +184,7 @@ class QRGenerator:
 
 
     def colorWidget(self):
-        self.couleur = ["Noir", "Vert", "Jaune", "Bleu", "Rouge"]
+        self.couleur = ["Noir", "Vert", "Jaune", "Bleu", "Rouge", "Orange", "STJO"]
         self.colorLabel : CTkLabel = CTkLabel(
             master=self.window, 
             text='Couleur du QRcode',
@@ -145,16 +194,41 @@ class QRGenerator:
             master = self.window,
             button_color="black",
             values = self.couleur,
-            command = lambda x:self.colorCallback()
+            command = lambda x:self.optionCallback()
         )
         self.colorLabel.place(relx=0.2, rely=0.8, anchor= CENTER)
         self.colorOptionmenu.place(relx=0.2, rely=0.85, anchor= CENTER)
+
+    def imgWidget(self):
+        self.img = ["Sans", "STJO"]
+        self.imgLabel : CTkLabel = CTkLabel(
+            master=self.window, 
+            text='Image sur le QRcode',
+            font=("Courier", 16)
+        )
+        self.imgOptionmenu : CTkOptionMenu = CTkOptionMenu(
+            master = self.window,
+            values = self.img,
+            command = lambda x:self.optionCallback()
+        )
+        self.imgLabel.place(relx=0.7, rely=0.8, anchor= CENTER)
+        self.imgOptionmenu.place(relx=0.7, rely=0.85, anchor= CENTER)
+    
+    def progressbarImgWidget(self):
+        self.borderWidth = 65
+        self.progressbarImg : CTkSlider = CTkSlider(
+            master = self.window,
+            from_= 20,
+            to=100,
+            command= lambda x: self.optionCallback()
+        )
+        self.progressbarImg.place(relx=0.7, rely=0.9, anchor=CENTER)
 
     def views(self):
         self.window.geometry("720x200")
         self.window.resizable(width=False, height=False)
         self.window.title("QRCode")
-        # self.window.iconbitmap(APP_PATH + r'\..\img\icon.ico')
+        self.window.iconbitmap("./img/icon.ico")
         self.linkWidget()
 
 if __name__ == "__main__":
