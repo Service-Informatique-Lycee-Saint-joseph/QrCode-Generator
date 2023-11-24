@@ -40,21 +40,22 @@ class QRGenerator:
     def saveAs(self, img):
         if not os.path.exists("C:\Qrcode"):
             os.mkdir("C:\Qrcode")
-        self.saveToplevel : CTkToplevel = CTkToplevel(self.window)
-        self.saveToplevel.geometry("400x250")
-        self.confirmFrame : CTkFrame = CTkFrame(master=self.saveToplevel)
-        self.confirmLabel : CTkLabel = CTkLabel(master=self.confirmFrame, text="Un fichier portant le même nom extiste déjà, veux tu le remplacer ?")
-        self.confirmLabel.pack()
-        self.confirmSavebutton = CTkButton(master=self.saveToplevel, text="Remplacer")
-        self.leavebutton = CTkButton(master=self.saveToplevel, text="Annuler")
-        self.confirmLabel.place(relx=0.5, rely=0.3, anchor= CENTER) 
-        self.confirmSavebutton.place(relx=0.7, rely=0.8, anchor= CENTER) 
-        self.leavebutton.place(relx=0.3, rely=0.8, anchor= CENTER) 
-        self.saveToplevel.grab_set()
-        self.saveToplevel.focus_set()
-        self.saveToplevel.focus_force()
-        # if os.path.exists("C:/Qrcode/" + str(self.getTextSave()) + ".png"):
+        if os.path.exists("C:/Qrcode/" + str(self.getTextSave()) + ".png"):
+            self.twoSameFilesWidget(img)
+        else:
+            img.save("C:/Qrcode/" + str(self.getTextSave()) + ".png")
+
+
+    def callbackCancelButton(self):
+        self.saveToplevel.destroy()
+        self.saveToplevel.update()
+
+
+    def callbackReplaceButton(self, img):
         img.save("C:/Qrcode/" + str(self.getTextSave()) + ".png")
+        self.saveToplevel.destroy()
+        self.saveToplevel.update()
+
 
     def viewQR(self, basewidth : int = 65, img : str = "", color : str | tuple = "black"):
         self.basewidth = basewidth
@@ -251,6 +252,32 @@ class QRGenerator:
         self.linkTextbox.place(relx=0.5, rely=0.5, anchor= CENTER)
         self.generateButton.place(relx=0.5, rely=0.8, anchor= CENTER)
 
+    def twoSameFilesWidget(self, img):
+        self.saveToplevel : CTkToplevel = CTkToplevel(self.window)
+        self.saveToplevel.geometry("400x250")
+        self.confirmLabel : CTkLabel = CTkLabel(
+            master=self.saveToplevel,
+            text="Un fichier portant le même nom extiste déjà, veux tu le remplacer ?"
+        )
+        self.confirmLabel.pack()
+        self.confirmSavebutton = CTkButton(
+            master=self.saveToplevel, 
+            text="Remplacer",
+            command= lambda : self.callbackReplaceButton(img)
+        )
+        self.leavebutton = CTkButton(
+            master=self.saveToplevel, 
+            text="Annuler",
+            command= lambda : self.callbackCancelButton()
+        )
+
+        self.confirmLabel.place(relx=0.5, rely=0.3, anchor= CENTER) 
+        self.confirmSavebutton.place(relx=0.7, rely=0.8, anchor= CENTER) 
+        self.leavebutton.place(relx=0.3, rely=0.8, anchor= CENTER) 
+
+        self.saveToplevel.grab_set()
+        self.saveToplevel.focus_set()
+        self.saveToplevel.focus_force()
 
     def saveWidget(self):
         self.saveLabel : CTkLabel = CTkLabel(
