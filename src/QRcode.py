@@ -1,5 +1,5 @@
 import os
-from customtkinter import CTk, CTkLabel, CTkTextbox, CTkButton, CTkOptionMenu, CTkSlider ,CENTER
+from customtkinter import CTk, CTkLabel, CTkTextbox, CTkButton, CTkOptionMenu, CTkSlider , CTkToplevel, CTkFrame, CENTER
 from tkinter import Label
 from PIL import Image, ImageTk
 import qrcode
@@ -40,7 +40,20 @@ class QRGenerator:
     def saveAs(self, img):
         if not os.path.exists("C:\Qrcode"):
             os.mkdir("C:\Qrcode")
-        print(self.getTextSave())
+        self.saveToplevel : CTkToplevel = CTkToplevel(self.window)
+        self.saveToplevel.geometry("400x250")
+        self.confirmFrame : CTkFrame = CTkFrame(master=self.saveToplevel)
+        self.confirmLabel : CTkLabel = CTkLabel(master=self.confirmFrame, text="Un fichier portant le même nom extiste déjà, veux tu le remplacer ?")
+        self.confirmLabel.pack()
+        self.confirmSavebutton = CTkButton(master=self.saveToplevel, text="Remplacer")
+        self.leavebutton = CTkButton(master=self.saveToplevel, text="Annuler")
+        self.confirmLabel.place(relx=0.5, rely=0.3, anchor= CENTER) 
+        self.confirmSavebutton.place(relx=0.7, rely=0.8, anchor= CENTER) 
+        self.leavebutton.place(relx=0.3, rely=0.8, anchor= CENTER) 
+        self.saveToplevel.grab_set()
+        self.saveToplevel.focus_set()
+        self.saveToplevel.focus_force()
+        # if os.path.exists("C:/Qrcode/" + str(self.getTextSave()) + ".png"):
         img.save("C:/Qrcode/" + str(self.getTextSave()) + ".png")
 
     def viewQR(self, basewidth : int = 65, img : str = "", color : str | tuple = "black"):
@@ -94,7 +107,6 @@ class QRGenerator:
 
     def showQR(self, basewidth : int = 65 , img : str = "", color : str | tuple = "black"):
         self.basewidth = basewidth
-        print(self.basewidth)
         if self.getTextLink() != "\n":
             self.viewQR(img=img, basewidth=self.basewidth, color=color)
             self.QRlabel.place(relx=0.2, rely=0.55, anchor= CENTER)
@@ -104,6 +116,7 @@ class QRGenerator:
         match self.selectImg:
             case "Sans":
                 self.img = ""
+                self.open = False
                 try:
                     self.progressbarImg.destroy()
                     self.progressBarLabel.destroy()
@@ -111,7 +124,12 @@ class QRGenerator:
                     pass
             case "STJO":
                 self.img = "./img/logo.png"
-                self.progressbarImgWidget()
+                if self.open == False:
+                    self.progressbarImgWidget()
+                    self.open = True
+                else:
+                    self.progressbarImg.set(65)
+                    self.progressBarLabel.configure(text=self.progressbarImg.get())
         self.selectColor = self.colorOptionmenu.get()
         self.colorOptionmenu.set(self.selectColor)
         match self.selectColor:
@@ -133,6 +151,21 @@ class QRGenerator:
             case "Orange":
                 self.showQR(img=self.img, color = "orange")
                 self.colorOptionmenu.configure(button_color="orange")
+            case "Cyan":
+                self.showQR(img=self.img, color = "cyan")
+                self.colorOptionmenu.configure(button_color="cyan")
+            case "Marron":
+                self.showQR(img=self.img, color = "brown")
+                self.colorOptionmenu.configure(button_color="brown")
+            case "Gris":
+                self.showQR(img=self.img, color = "grey")
+                self.colorOptionmenu.configure(button_color="grey")
+            case "Rose":
+                self.showQR(img=self.img, color = "pink")
+                self.colorOptionmenu.configure(button_color="pink")
+            case "Violet":
+                self.showQR(img=self.img, color = "purple")
+                self.colorOptionmenu.configure(button_color="purple")
             case "STJO":
                 self.showQR(img=self.img, color = (0, 91, 155))
                 self.colorOptionmenu.configure(button_color='#005b9b')
@@ -155,6 +188,7 @@ class QRGenerator:
             case "STJO":
                 self.img = "./img/logo.png"
         self.basewidth = int(self.progressbarImg.get())
+        print(self.basewidth)
         self.selectColor = self.colorOptionmenu.get()
         self.colorOptionmenu.set(self.selectColor)
         match self.selectColor:
@@ -176,6 +210,21 @@ class QRGenerator:
             case "Orange":
                 self.showQR(img=self.img, basewidth=self.basewidth, color = "orange")
                 self.colorOptionmenu.configure(button_color="orange")
+            case "Cyan":
+                self.showQR(img=self.img, basewidth=self.basewidth, color = "cyan")
+                self.colorOptionmenu.configure(button_color="cyan")
+            case "Marron":
+                self.showQR(img=self.img, basewidth=self.basewidth, color = "brown")
+                self.colorOptionmenu.configure(button_color="brown")
+            case "Gris":
+                self.showQR(img=self.img, basewidth=self.basewidth, color = "grey")
+                self.colorOptionmenu.configure(button_color="grey")
+            case "Rose":
+                self.showQR(img=self.img, basewidth=self.basewidth, color = "pink")
+                self.colorOptionmenu.configure(button_color="pink")
+            case "Violet":
+                self.showQR(img=self.img, basewidth=self.basewidth, color = "purple")
+                self.colorOptionmenu.configure(button_color="purple")
             case "STJO":
                 self.showQR(img=self.img, basewidth=self.basewidth, color = (0, 91, 155))
                 self.colorOptionmenu.configure(button_color='#005b9b')
@@ -226,7 +275,7 @@ class QRGenerator:
 
 
     def colorWidget(self):
-        self.couleur = ["Noir", "Vert", "Jaune", "Bleu", "Rouge", "Orange", "STJO"]
+        self.couleur = ["Noir", "Vert", "Jaune", "Bleu", "Rouge", "Orange", "Cyan", "Marron", "Gris", "Rose", "Violet", "STJO"]
         self.colorLabel : CTkLabel = CTkLabel(
             master=self.window, 
             text='Couleur du QRcode',
@@ -262,8 +311,8 @@ class QRGenerator:
         self.progressbarImg : CTkSlider = CTkSlider(
             master = self.window,
             from_=20,
-            to=100,
-            number_of_steps=80,
+            to=80,
+            number_of_steps=60,
             command= lambda x : self.progressBarCallback()
         )
         self.progressBarLabel : CTkLabel = CTkLabel(
