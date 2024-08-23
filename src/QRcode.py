@@ -189,7 +189,7 @@ class QRGenerator:
             case "STJO":
                 self.img = "./img/logo.png"
         self.basewidth = int(self.progressbarImg.get())
-        print(self.basewidth)
+        #print(self.basewidth)
         self.selectColor = self.colorOptionmenu.get()
         self.colorOptionmenu.set(self.selectColor)
         match self.selectColor:
