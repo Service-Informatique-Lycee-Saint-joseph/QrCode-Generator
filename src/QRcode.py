@@ -170,6 +170,15 @@ class QRGenerator:
             case "STJO":
                 self.showQR(img=self.img, color = (0, 91, 155))
                 self.colorOptionmenu.configure(button_color='#005b9b')
+            case "vert stjo":
+                self.showQR(img=self.img, color = (182, 201, 49))
+                self.colorOptionmenu.configure(button_color='#B6C931')
+            case "orange stjo" :
+                self.showQR(img=self.img, color = (213, 124, 29))
+                self.colorOptionmenu.configure(button_color='#D57C1D')
+            case "bleu clair stjo" :
+                self.showQR(img=self.img, color = (108, 186, 236))
+                self.colorOptionmenu.configure(button_color='#6CBAEC')
         
 
     def progressBarCallback(self):
@@ -229,7 +238,15 @@ class QRGenerator:
             case "STJO":
                 self.showQR(img=self.img, basewidth=self.basewidth, color = (0, 91, 155))
                 self.colorOptionmenu.configure(button_color='#005b9b')
-        
+            case "vert stjo":
+                self.showQR(img=self.img, color = (182, 201, 49))
+                self.colorOptionmenu.configure(button_color='#B6C931')
+            case "orange stjo" :
+                self.showQR(img=self.img, color = (213, 124, 29))
+                self.colorOptionmenu.configure(button_color='#D57C1D')
+            case "bleu clair stjo" :
+                self.showQR(img=self.img, color = (108, 186, 236))
+                self.colorOptionmenu.configure(button_color='#6CBAEC')
 
     def linkWidget(self):
         self.linkLabel : CTkLabel = CTkLabel(
@@ -302,7 +319,7 @@ class QRGenerator:
 
 
     def colorWidget(self):
-        self.couleur = ["Noir", "Vert", "Jaune", "Bleu", "Rouge", "Orange", "Cyan", "Marron", "Gris", "Rose", "Violet", "STJO"]
+        self.couleur = ["Noir", "Vert", "Jaune", "Bleu", "Rouge", "Orange", "Cyan", "Marron", "Gris", "Rose", "Violet", "STJO","vert stjo","orange stjo","bleu clair stjo"]
         self.colorLabel : CTkLabel = CTkLabel(
             master=self.window, 
             text='Couleur du QRcode',
@@ -356,8 +373,3 @@ class QRGenerator:
         self.window.title("QRCode")
         self.window.iconbitmap("./img/icon.ico")
         self.linkWidget()
-
-if __name__ == "__main__":
-    window = CTk()
-    app = QRGenerator(window)
-    app.run()
