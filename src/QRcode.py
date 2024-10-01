@@ -1,5 +1,7 @@
 import os
 from customtkinter import CTk, CTkLabel, CTkTextbox, CTkButton, CTkOptionMenu, CTkSlider , CTkToplevel, CTkFrame, CENTER
+from tkinter import filedialog 
+from tkinter import messagebox
 from tkinter import Label
 from PIL import Image, ImageTk
 import qrcode
@@ -38,12 +40,22 @@ class QRGenerator:
         return self.saveTextbox.get("1.0",'end')[:-1]
     
     def saveAs(self, img):
+        """
         if not os.path.exists("C:\Qrcode"):
             os.mkdir("C:\Qrcode")
         if os.path.exists("C:/Qrcode/" + str(self.getTextSave()) + ".png"):
             self.twoSameFilesWidget(img)
         else:
             img.save("C:/Qrcode/" + str(self.getTextSave()) + ".png")
+        """
+        fichier = ""
+        while fichier=="":
+            fichier = filedialog.asksaveasfilename(defaultextension=".png",
+                                       filetypes=[("PNG files", "*.png")])
+            if (fichier == ""):
+                messagebox.showerror("QRCODE","Aucun fichier selectionné")
+                
+                
 
 
     def callbackCancelButton(self):
@@ -313,8 +325,8 @@ class QRGenerator:
             width= 300,
             font=("Arial", 14)
         )
-        self.saveLabel.place(relx=0.65, rely=0.44, anchor= CENTER)
-        self.saveTextbox.place(relx=0.65, rely=0.50, anchor= CENTER)
+        #self.saveLabel.place(relx=0.65, rely=0.44, anchor= CENTER)
+        #self.saveTextbox.place(relx=0.65, rely=0.50, anchor= CENTER)
         self.saveButton.place(relx=0.65, rely=0.57, anchor= CENTER)
 
 
