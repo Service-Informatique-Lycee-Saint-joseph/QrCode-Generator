@@ -54,7 +54,8 @@ class QRGenerator:
                                        filetypes=[("PNG files", "*.png")])
             if (fichier == ""):
                 messagebox.showerror("QRCODE","Aucun fichier selectionné")
-                
+            else :
+                img.save(fichier)   
                 
 
 
